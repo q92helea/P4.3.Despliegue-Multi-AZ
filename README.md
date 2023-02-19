@@ -16,7 +16,7 @@ Esta arquictetura en la nube la podemos dividir en 3 niveles.
 Este tipo de arquitectura de se denomina **AAAA** porque nos da:
 **Alta disponibilidad**, ya que tenemos trabajamos en varias Zonas de disponibilidad (Multi AZ); **Alta escalabilidad**, pues tenemos la posibilidad de añadir nuevos nodos o nuevo hardware; **Alto rendimiento**, porque usamos un balanceador de carga nos permite el reparto de solicitudes web; y **Alta Seguridad**, que nos brinda Amazon con las distintas reglas de seguridad, los clúster y el proxy inverso del nivel 1.
 
-![Imagen](./images/Capturas/CLUSTER.drawio.png)
+![Imagen](./docs/images/CLUSTER.png)
 
 ## 2. PRACTICA:
 
@@ -30,25 +30,25 @@ ________________________________________________________________________________
 
 Vamos a Grupos de seguridad y _creamos el grupo_ **SG_web** cuyas reglas de entrada darán permiso para el uso del **puerto  TCP 80 (HTTP) y TCP 22 (SSH)**, **para todo el mundo** para poder configurar las EC2.
 
-![Reglas de entrada del grupo de seguridad SG_web](./images/capturas/01GS_WEB.png)
+![Reglas de entrada del grupo de seguridad SG_web](./docs/images/capturas/01GS_WEB.png)
 
 A continuación, crearemos el segundo grupo de seguridad, SG_efs que nos permitirá el tráfico entre los servidores webs y el volumen de archivos Amazon EFS por el puerto TCP 2049.
 
-![imagen](./images/capturas/02.GS_efs.png)
+![imagen]./docs/images/capturas/02.GS_efs.png)
 
 #### PASO 2. - Configuración de los servidores web en Multi AZ
 
 Ahora lanzamos 2 ó 3  instancias EC2 de tipo **Amazon Linux** con _par de claves_ tipo **vockey**, pero, en _distintas zonas de disponibilidad_ (**A**vailability  **Z**one) para que el clúster de servidores sea MULTI **AZ**.
 
-![captura](./images/Capturas/05.EC2LINUX01_t2.micro%2Bvokey.png)
+![captura](./docs/images/Capturas/05.EC2LINUX01_t2.micro%2Bvokey.png)
 
 
-![captura](./images/Capturas/06.EC2LINUX01_ConfigRED_1a%20%2BGS_web.png)
+![captura](./docs/images/Capturas/06.EC2LINUX01_ConfigRED_1a%20%2BGS_web.png)
 
 
 
 
-![Configuración de Red de EC2_Linux01](./images/Capturas/10.EC2LINUX02_ConfigRED_1b%20%2BGS_web.png)
+![Configuración de Red de EC2_Linux01](./docs/images/Capturas/10.EC2LINUX02_ConfigRED_1b%20%2BGS_web.png)
 
 
 
@@ -64,7 +64,7 @@ systemctl enable httpd
 yum -y install nfs-utils
 ````
 
-![Script para Datos de usuario](./images/Capturas/10.EC2LINUX02_DatosUsuario.png)
+![Script para Datos de usuario](./docs/images/Capturas/10.EC2LINUX02_DatosUsuario.png)
 
 <br>
 
@@ -72,7 +72,7 @@ yum -y install nfs-utils
 
 Para crear el sistema de archivos Amazon EFS, que denominaremos _miefs_, usaremos la VPC por defecto, y la storage class standard.
 
-![Creación de EFS](./images/Capturas/03.minfs.png)
+![Creación de EFS](./docs/images/Capturas/03.minfs.png)
 
 
 Creado el sistema EFS, cambiaremos los grupos que vendrán asignados por defecto por el grupo SG_efs creado en el paso 1.
@@ -222,11 +222,11 @@ sudo systemctl restart apache2
 Y nuestro balanceador estaría terminado.
  Para comprobarlo, abrimos la consola del balanceador,  escribiendo en el navegador `ipdelbalanceador/balancer-manager`.
 
-![Imagen de balanceador antes de la comprobación](./images/capturas/Balanceador02.png)
+![Imagen de balanceador antes de la comprobación](./docs/images/capturas/Balanceador02.png)
 
  Recargamos varias veces la página web y podremos ver cuantas peticiones se han hecho a cada servidor web.
 
-![captura](./images/Capturas/LoadBalanceAFTER.png)
+![captura](./docs/images/Capturas/LoadBalanceAFTER.png)
 ________________________________________________________________________
 ## CREACIÓN DE UN CLÚSTER MULTI AZ
 _____________________________________________________________________
@@ -429,7 +429,7 @@ sudo amazon-linux-extras | grep php
 
 Verás un resultado como este
 
-![Resultado del comando anterior](./images/capturas/)
+![Resultado del comando anterior](./docs/images/capturas/)
 
 Ahora habilitamos php8.0:
 
