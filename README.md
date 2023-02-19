@@ -30,11 +30,11 @@ ________________________________________________________________________________
 
 Vamos a Grupos de seguridad y _creamos el grupo_ **SG_web** cuyas reglas de entrada darán permiso para el uso del **puerto  TCP 80 (HTTP) y TCP 22 (SSH)**, **para todo el mundo** para poder configurar las EC2.
 
-![Reglas de entrada del grupo de seguridad SG_web](./docs/images/capturas/01GS_WEB.png)
+![Reglas de entrada del grupo de seguridad SG_web](./docs/images/Capturas/01GS_WEB.png)
 
 A continuación, crearemos el segundo grupo de seguridad, SG_efs que nos permitirá el tráfico entre los servidores webs y el volumen de archivos Amazon EFS por el puerto TCP 2049.
 
-![imagen]./docs/images/capturas/02.GS_efs.png)
+![imagen]./docs/images/Capturas/02.GS_efs.png)
 
 #### PASO 2. - Configuración de los servidores web en Multi AZ
 
@@ -55,7 +55,7 @@ Ahora lanzamos 2 ó 3  instancias EC2 de tipo **Amazon Linux** con _par de clave
 
  Además, antes de lanzarlas, en la sección de datos de usuario, hay que escribir el siguiente script.
 
-````
+````bash
 #!/bin/bash
 yum update -y
 yum install httpd -y
@@ -112,7 +112,7 @@ sudo unzip Netflix.zip
 
 ```
 
-Ahora, todos los servidores web que se conecten al volumen EFS mostrarán la misma web porque todos tienen los mismos archivos. 
+Ahora, todos los servidores web que se conecten al volumen EFS mostrarán la misma web porque todos tienen los mismos archivos (Netflix.zip, index.html, style.css y script.js)
 
 
 #### PASO 5.- Edición de /etc/fstab en los servidores web: Montaje AUTOMÁTICO del sistema de archivo EFS 
@@ -230,7 +230,7 @@ Y nuestro balanceador estaría terminado.
 ________________________________________________________________________
 ## CREACIÓN DE UN CLÚSTER MULTI AZ
 _____________________________________________________________________
-Ahora añadimos un formulario a la pagina web, donde los datos recogidos serán almacenados en una base de datos de Amazon RDS Multi AZ con una instancia en espera.
+Ahora añadimos un [formulario](./dowload/docs.zip) a la pagina web, donde los datos recogidos serán almacenados en una base de datos de Amazon RDS Multi AZ con una instancia en espera.
 
 ### PASO 8. -  Creación de formulario
 
@@ -241,7 +241,7 @@ cd /var/www/html/efs_mount
 sudo nano index.html
 ```
 
-Y añadimos el enlace a formulario.php, quedando el archivo de la siguiente manera
+Y añadimos un enlace a formulario.php, quedando el archivo de la siguiente manera
 
 ```html
 <!DOCTYPE html>
@@ -473,7 +473,7 @@ CONFIGURACIÓN:
 
 * IDENTIFICADOR DE INSTANCIAS DE BASES DE DATOS: **Cluster**
 
-    * CONFIGURACIÓN DE CREDENCIALES
+  * CONFIGURACIÓN DE CREDENCIALES
         * Nombre de usuario maestro: **admin**
         * Contraseña maestra: **la de siempre**
 * CONFIGURACIÓN DE LA INSTANCIA: Clases con ráfagas (incluye clases t)
@@ -490,7 +490,7 @@ CONFIGURACIÓN:
 
 Para este clúster, crearemos  un grupo de seguridad, SG_MySQL, que permitirá la conexión a través d l puerto  3306 para todo el mundo, hasta que acabemos de editar la base de datos. Momento, en que securizaremos el sistema y solo permitamos la conexión entre el cluster de servidores web con el cluster de Amazon RDS.
 
-### PASO 11. - ****
+### PASO 12. - Crear la BD en Amazon RDS Multi AZ
 
 Para editar la base de datos necesitaremos el endpoint de Amazon RDS y un SGBD (HeidiSQL). Esta es la base de datos a editar:
 
@@ -503,5 +503,6 @@ nombre VARCHAR(30),
 donativo DECIMAL(8,2),
 tipomoneda CHAR(5) CHECK (tipomoneda IN ('Euro','Dolar')));
 ```
+### PASO 13- SECURIZAR
 
 Tras comprobar que todo funcione correctamente comenzaremos a securizar el despliegue para ello eliminaremos la regla de entrada de SSH de los grupos de seguridad, quitaremos el acceso público de nuestra base de datos, cambiaremos la regla de entrada del puerto 3306 para que solo esté abierto para conexiones que lleguen desde los servidores web y por último cambiaremos el grupo de seguridad de las maquinas web para que solo el balanceador pueda acceder a ellas una vez hecho esto habremos terminado con el despliegue y con todo esto tendremos las siguientes ventajas:
