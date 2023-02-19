@@ -20,11 +20,11 @@ Este tipo de arquitectura de se denomina **AAAA** porque nos da:
 
 ## 2. PRACTICA:
 
-<hr>
+__________________________________________________________________________________
 
 ### 2.1 DESPLIEGUE DE UN CLÚSTER WEB DINÁMICO MULI AZ (NIVEL 2)
 
-<hr>
+__________________________________________________________________________________
 
 #### PASO 1. - Creación del grupo de seguridad de las máquinas EC2: SG_WEB
 
@@ -85,16 +85,18 @@ systemctl status httpd
 ```
 Si funciona correctmente,  cambiaremos el al directorio /var/www/html y crearemos el directorio _efs-mount_.
 
-```
+```bash
 mkdir efs-mount
 ``` 
+
 En esta carpeta montaremos el sistema EFS creado el paso anterior, a través de siguiente _montaje manual_:
 
 ```bash
-sudo mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport Nombre.de.DNS:/ efs-mount  
+sudo mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport Nombre.de.DNS.EFS:/ efs-mount  
 
-#El "Nombre de DNS" se copia de la pestaña general de nuestro Amazon EFS creado.
+#El "Nombre de DNS" del EFS se copia desde la pestaña general de nuestro Amazon EFS creado.
 ```
+
 Montado Amazon EFS en la carpeta efs-mount, cambiamos al directorio de montaje.
 
 ```bash
@@ -115,40 +117,45 @@ Ahora, todos los servidores web que se conecten al volumen EFS mostrarán la mis
 
 #### PASO 5.- Edición de /etc/fstab en los servidores web: Montaje AUTOMÁTICO del sistema de archivo EFS 
 
-En el paso anterior, el montaje que hicimos de la carpeta efs-mount es manual, y por tanto, no permanente, puesto que con el reinicio de la maquina desaparecerá y no tendremos acceso a los archivos descargados.
-Ahora vamos configurar la maquinas para que hagan un montaje automático del sistema de archivos EFS para que siempre tengan accesible los archivos.
+En el paso anterior, el montaje que hicimos de la carpeta efs-mount es **manual**, y por tanto, **no permanente**, puesto que con el reinicio de la maquina desaparecerá y no tendremos acceso a los archivos descargados.
+Ahora vamos configurar la maquinas para que hagan un **montaje automático** del sistema de archivos EFS , de manera que los servidores web **siempre** tengan accesible los archivos.
 Antes de nada, hay que editar el document root de httpd para que muestre por defecto la carpeta montada.
+
+```bash
+sudo nano /etc/httpd/conf/httpd.conf
 ```
-sudo nano /etc/httpd/efs-mount
-``` 
+
 Buscamos la línea  `DocumentRoot "/var/www/html`y la modificamos a  `DocumentRoot "/var/www/html/efs-mount/`
 
 Tras esto nos iremos al archivo "/etc/fstab" y añadimos la siguiente línea para que no se nos desmonte el directorio al reiniciar las máquinas:  
 
 ```bash
-  tuEFS.EFS.us-east-1.amazonaws.com:/  /var/www/html/efs-mount nfs defaults 0 0
+  NOMBRE.DNS.EFS:/  /var/www/html/efs-mount nfs defaults 0 0
 ```
-<hr>
 
-## CREACIÓN DEL BALANCEADOR DE CARGA Y PROXY INVERSO
-<hr>
+Ahora reiniciamos la maquinas y comprobamos que la web es visible
 
-### PASO 6. - Creamos una EC2 Ubuntu con puerto 80 abierto: Acceso a Internet.
+***
+
+## CREACIÓN DEL BALANCEADOR DE CARGA Y PROXY 
+***
+
+### PASO 6. - Creamos una EC2 Ubuntu con puerto 80 abierto: Acceso a Internet
 
 Crearemos una máquina EC2 Ubuntu, que funcionará como balanceador de carga y proxy inverso. Esta no tendrá ninguna configuración adicional en la creación, simplemente deberemos abrir el puerto 80 desde cualquier lugar y el puerto 22 temporalmente hasta que terminemos la configuración.
 
-### PASO 7. - Instalación de Apache2 y configuración como Balanceador de carga y proxy inverso.
+### PASO 7. - Instalación de Apache2 y configuración como Balanceador de carga y proxy inverso
 
 #### Instalacicón de Apache2
 
-
-````
+````bash
     sudo apt update
     sudo apt install apache2
 ````
+
 #### Activamos los siguientes modulos de Apache 2
 
-````
+````bash
     sudo a2enmod proxy
     sudo a2enmod proxy_http
     sudo a2enmod proxy_ajp
@@ -160,22 +167,28 @@ Crearemos una máquina EC2 Ubuntu, que funcionará como balanceador de carga y p
     sudo a2enmod proxy_html
     sudo a2enmod lbmethod_byrequests 
 ````
+
 También podemos escribir este comando de esta manera:
-````
+
+````bash
 sudo a2enmod proxy proxy_http proxy_ajp rewrite deflate headers proxy_balancer proxy_connect proxy_html lbmethod_byrequests
 ````
+
 Y finalmente reiniciamos el servicio 
-````
+
+````bash
 sudo systemctl restart apache2
 ````
 
 #### Configuración de Apache: Balanceador y proxy inverso
 Ahora, modificaremos el archivo **`/etc/apache2/sites-enabled/000-default.conf`**
-````
+
+````bash
 sudo nano /etc/apache2/sites-enabled/000-default.conf
 ````
 
 y antes de la línea "&lt;/VirtualHost&gt;" añadiremos lo siguiente:
+
 ````bash
 ProxyPass /balancer-manager !
     <Proxy balancer://clusterasir>
@@ -199,23 +212,24 @@ ProxyPass /balancer-manager !
        Allow from all
     </Location>
 ````
+
 Reiniciamos Apache
-````
+
+````bash
 sudo systemctl restart apache2
 ````
 
 Y nuestro balanceador estaría terminado.
- Para comprobarlo, abrimos la consola del balanceador,  escribiendo en el navegador `ipdelbalanceador/balancer-manager`. 
+ Para comprobarlo, abrimos la consola del balanceador,  escribiendo en el navegador `ipdelbalanceador/balancer-manager`.
 
-![Imagen de balanceador antes de la comprobación](./images/captura)
+![Imagen de balanceador antes de la comprobación](./images/capturas/Balanceador02.png)
 
  Recargamos varias veces la página web y podremos ver cuantas peticiones se han hecho a cada servidor web.
 
-![captura](balancer.PNG)
-<hr>
-
+![captura](./images/Capturas/LoadBalanceAFTER.png)
+__________________________________________________________________________________
 ## CREACIÓN DE UN CLÚSTER MULTI AZ
-<hr>
+_________________________________________________________________________________
 Ahora añadimos un formulario a la pagina web, donde los datos recogidos serán almacenados en una base de datos de Amazon RDS Multi AZ con una instancia en espera.
 
 ### PASO 8. -  Creación de formulario
@@ -300,14 +314,16 @@ Escribimos el siguiente código en el archivo creado
 </form>
 </body>
 </html>
-
 ```
+
 Como vemos en el documento html, los datos del formulario serán grabados en el archivo _grabar.php_ que crearemos ahora. Ejecutamos el siguiente comando:
 
 ```bash
 sudo nano grabar.php
 ```
+
 Y copiamos el siguiente código:
+
 ```php
 <html>
 <head>
@@ -351,11 +367,13 @@ echo "</div>";
 </body>
 </html>
 ```
+
 Finalmente creamos el arhivo conexion.php.
 
 `sudo nano conexion.php`
 
 Y copiamos el siguiente código:
+
 ````php
 <?php
 $servername = "/*PONER AQUI EL ENDPOINT*/";
@@ -406,6 +424,7 @@ Ahora vamos a instalar PHP en todas las maquinas EC2 que funcionan como servidor
 Seguiremos el tutorial de la siguiente página. En ella explica como instalar PHP7/8 en una EC2 con Amazon Linux, porque por defecto, AWS Amazon Linux 2 instalará PHP 5.4 si se ejecuta: YUM Install PHP.Para instalar una version superior de PHP sigue los siguiente pasos
 
 #### 1º) Instalar EXTRAS de Amazon Linux
+
 Asegúrese de haber instalado extras de Amazon Linux en su sistema.Ejecutar el comando:
 
 `sudo yum install -y amazon-linux-extras`
@@ -414,7 +433,7 @@ Asegúrese de haber instalado extras de Amazon Linux en su sistema.Ejecutar el c
 
 El comando Amazon-Linux-Extras mostrará todas las versiones PHP disponibles (y otros paquetes) que se pueden instalar desde el repositorio. Ejecuta:
 
-```
+```bash
 sudo yum update
 sudo amazon-linux-extras | grep php
 ```
@@ -429,7 +448,8 @@ Ahora habilitamos php8.0:
 sudo amazon-linux-extras enable php8.0
 
 ```
-####  3º) Instale PHP 8.0
+
+#### 3º) Instale PHP 8.0
 
 Ahora puede instalar PHP 8.0
 
