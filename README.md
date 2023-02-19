@@ -28,11 +28,11 @@ ________________________________________________________________________________
 
 #### PASO 1. - Creación del grupo de seguridad de las máquinas EC2: SG_WEB
 
-Vamos a Grupos de seguridad y _creamos el grupo_ **SG_web** cuyas reglas de entrada darán permiso para el uso del **puerto  TCP 80 (HTTP) y TCP 22 (SSH)**, **para todo el mundo** para poder configurar las EC2. 
+Vamos a Grupos de seguridad y _creamos el grupo_ **SG_web** cuyas reglas de entrada darán permiso para el uso del **puerto  TCP 80 (HTTP) y TCP 22 (SSH)**, **para todo el mundo** para poder configurar las EC2.
 
 ![Reglas de entrada del grupo de seguridad SG_web](./images/capturas/01GS_WEB.png)
 
-A continuación, crearemos el segundo grupo de seguridad, SG_efs que nos permitirá el tráfico entre los servidores webs y el volumen de archivos Amazon EFS por el puerto TCP 2049. 
+A continuación, crearemos el segundo grupo de seguridad, SG_efs que nos permitirá el tráfico entre los servidores webs y el volumen de archivos Amazon EFS por el puerto TCP 2049.
 
 ![imagen](./images/capturas/02.GS_efs.png)
 
@@ -46,7 +46,7 @@ Ahora lanzamos 2 ó 3  instancias EC2 de tipo **Amazon Linux** con _par de clave
 ![captura](./images/Capturas/06.EC2LINUX01_ConfigRED_1a%20%2BGS_web.png)
 
 
-![Configuración de Red de EC2_Linux01](./images/Capturas/06.EC2LINUX01_ConfigRED_1a.png)
+
 
 ![Configuración de Red de EC2_Linux01](./images/Capturas/10.EC2LINUX02_ConfigRED_1b%20%2BGS_web.png)
 
@@ -227,9 +227,9 @@ Y nuestro balanceador estaría terminado.
  Recargamos varias veces la página web y podremos ver cuantas peticiones se han hecho a cada servidor web.
 
 ![captura](./images/Capturas/LoadBalanceAFTER.png)
-__________________________________________________________________________________
+________________________________________________________________________
 ## CREACIÓN DE UN CLÚSTER MULTI AZ
-_________________________________________________________________________________
+_____________________________________________________________________
 Ahora añadimos un formulario a la pagina web, donde los datos recogidos serán almacenados en una base de datos de Amazon RDS Multi AZ con una instancia en espera.
 
 ### PASO 8. -  Creación de formulario
@@ -244,36 +244,26 @@ sudo nano index.html
 Y añadimos el enlace a formulario.php, quedando el archivo de la siguiente manera
 
 ```html
-  <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="style.css" />
-        <title>Movie App</title>
-      </head>
-      <body>
-        <header>
-          <form id="form">
-            <input type="text" id="search" class="search" placeholder="Search">
-          </form>
-        </header>
-  
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Movie App</title>
+  </head>
+  <body>
+    <header><p>Andres Heras</p>
+     <form action="formulario.php">
+                <input class="boton_personalizado" type="submit" value="Donativos Turquia y Siria " />
+        </form>
+    </header>
 
+    <main id="main"></main>
 
-------------------------------------------
-NUEVA LINEA: ENLACE A FORMULARIO.PHP
-------------------------------------------      
-
-    <a href="formulario.php"> Donativos Siria y Turquia </a>
-        
---------------------------------------------------------------
-<main id="main"></main>
-        <script src="script.js"></script>
-      </body>
-    </html>
-
-
+    <script src="script.js"></script>
+  </body>
+</html>
 ```
 
 Ahora creamos el archivo **`formulario.php`** ejecutando el siguiente comando:
@@ -281,7 +271,6 @@ Ahora creamos el archivo **`formulario.php`** ejecutando el siguiente comando:
 `sudo nano formulario.php`
 
 Escribimos el siguiente código en el archivo creado
-
 
 ```html
 <html>
