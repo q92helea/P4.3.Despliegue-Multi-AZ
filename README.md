@@ -429,7 +429,7 @@ sudo amazon-linux-extras | grep php
 
 Verás un resultado como este
 
-![Resultado del comando anterior](./docs/images/capturas/)
+![Resultado del comando anterior](./docs/images/Capturas/version.php.png)
 
 Ahora habilitamos php8.0:
 
