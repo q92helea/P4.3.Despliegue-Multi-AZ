@@ -75,7 +75,9 @@ Para crear el sistema de archivos Amazon EFS, que denominaremos _miefs_, usaremo
 ![Creación de EFS](./docs/images/Capturas/03.minfs.png)
 
 
-Creado el sistema EFS, cambiaremos los grupos que vendrán asignados por defecto por el grupo SG_efs creado en el paso 1.
+Creado el sistema EFS, iremos a la Pestaña | Red |> Administrar y cambiaremos los grupos que vendrán asignados por defecto (default) por el grupo SG_efs creado en el paso 1.
+
+![Cambio de la reglas por defecto en el EFS](./docs/images/Capturas/Cambio_SG_EFS.png)
 
 #### PASO 4. - Configuración del servidor: Montaje MANUAL de Amazon EFS a un servidor web
 
@@ -222,14 +224,15 @@ sudo systemctl restart apache2
 Y nuestro balanceador estaría terminado.
  Para comprobarlo, abrimos la consola del balanceador,  escribiendo en el navegador `ipdelbalanceador/balancer-manager`.
 
-![Imagen de balanceador antes de la comprobación](./docs/images/capturas/Balanceador02.png)
+![Imagen de balanceador antes de la comprobación](./docs/images/Capturas/LoadBalanceBEFORE.png)
 
  Recargamos varias veces la página web y podremos ver cuantas peticiones se han hecho a cada servidor web.
 
 ![captura](./docs/images/Capturas/LoadBalanceAFTER.png)
-________________________________________________________________________
+
+***
 ## CREACIÓN DE UN CLÚSTER MULTI AZ
-_____________________________________________________________________
+***
 Ahora añadimos un [formulario](./dowload/docs.zip) a la pagina web, donde los datos recogidos serán almacenados en una base de datos de Amazon RDS Multi AZ con una instancia en espera.
 
 ### PASO 8. -  Creación de formulario
@@ -409,8 +412,7 @@ Y pegamos el siguiente código
 ### PASO 9. - Instalando PHP en todos los servidores web
 
 Ahora vamos a instalar PHP en todas las maquinas EC2 que funcionan como servidores.
-
-Seguiremos el tutorial de la siguiente página. En ella explica como instalar PHP7/8 en una EC2 con Amazon Linux, porque por defecto, AWS Amazon Linux 2 instalará PHP 5.4 si se ejecuta: YUM Install PHP.Para instalar una version superior de PHP sigue los siguiente pasos
+Nos guiaremos con un tutorial de una [página](https://arstech.net/install-php-7-on-amazon-linux-2/) de internet, donde se nos explica como instalar PHP7/8 en una EC2 con Amazon Linux, porque por defecto, AWS Amazon Linux 2 instalará PHP 5.4 si se ejecuta: <code>YUM Install PHP</code>.Para instalar una version superior de PHP, el tutorial nos recomienda seguir los siguiente pasos:
 
 #### 1º) Instalar EXTRAS de Amazon Linux
 
