@@ -316,6 +316,7 @@ sudo nano grabar.php
 Y copiamos el siguiente código:
 
 ```php
+
 <html>
 <head>
  <meta charset="UTF-8" />
@@ -343,7 +344,7 @@ $sql = "INSERT INTO donativos VALUES (null,:nombre, :donativo, :tipomoneda)";
 $stmt= $conn->prepare($sql);
 $stmt->execute($data);
 echo "<div class='center'>";
-echo "<h2> Has colaborado con ". $donativo. "  " . $tipomoneda."</h2>";
+echo "<h2> Has colaborado con ". $donativo. "  " . $tipomoneda."</h2>" ;
 echo "<h2> Donacion registrada correctamente. Gracias por su colaboracion </h2>";
 echo "<h2><a href='index.html' > Volver a Inicio </a></h2>";
 echo "</div>";
@@ -354,6 +355,7 @@ echo "<div class='center' style='font-size:25px;color: #FF0000'>";
     }
 echo "</div>";
 ?>
+
 </main>
 </body>
 </html>
@@ -373,14 +375,12 @@ $servername = "/*PONER AQUI EL ENDPOINT*/";
 $username = "admin";
 $password = "Root1234$";
 $bd="Cluster";/*CUIDADO CON EL NOMBRE DE LA BD*/
-// Create connection
-$conn = new  mysqli($servername, $username, $password,$bd);
-// Check connection
-if ($conn->connect_error) {
-    die("Conexión falla " . $conn->connect_error);
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$bd", $username, $password);
+   } catch (PDOException $pe) {
+    die("Could not connect to the database $dbname :" . $pe->getMessage());
 }
-echo "Conexión exitosa";
-?>
+
 ````
 
 Ahora tendriamos en Amazon EFS los archivos:

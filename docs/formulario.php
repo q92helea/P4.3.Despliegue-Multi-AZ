@@ -11,7 +11,7 @@
       </form>
 </header>
 <main id="main">
-<form action="grabar.php" method="post" class="form">
+<form action="grabar.php" method="POST" class="form">
      <label ><h1> DONATIVOS PARA TURQUIA Y SIRIA </h1></label>
     <label for="name">Andres Heras :</label>
     <input type="text" id="nombre" name="nombre">
