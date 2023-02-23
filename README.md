@@ -70,7 +70,7 @@ yum -y install nfs-utils
 
 #### PASO 3. - Creación del almacenamiento web: sistema de archivos AMAZON EFS
 
-Para crear el sistema de archivos Amazon EFS, que denominaremos _miefs_, usaremos la VPC por defecto, y la storage class standard.
+Para crear el sistema de archivos Amazon EFS, que denominaremos _minfs_, usaremos la VPC por defecto, y la storage class standard.
 
 ![Creación de EFS](./docs/images/Capturas/03.minfs.png)
 
@@ -88,7 +88,7 @@ systemctl status httpd
 Si funciona correctmente,  cambiaremos el al directorio /var/www/html y crearemos el directorio _efs-mount_.
 
 ```bash
-mkdir efs-mount
+sudo mkdir efs-mount
 ``` 
 
 En esta carpeta montaremos el sistema EFS creado el paso anterior, a través de siguiente _montaje manual_:
@@ -195,13 +195,13 @@ y antes de la línea "&lt;/VirtualHost&gt;" añadiremos lo siguiente:
 ProxyPass /balancer-manager !
     <Proxy balancer://clusterasir>
         # Server 1
-                BalancerMember http://ipserverweb1
+                BalancerMember http://ipPRIVADA_serverweb1
 
         # Server 2
-                BalancerMember http://ipserverweb2
+                BalancerMember http://ipPRIVADA_serverweb2
 
         # Server 3
-                BalancerMember http://ipserverweb3
+                BalancerMember http://ipPRIVADA_serverweb3
 
          </Proxy>
 
@@ -237,14 +237,13 @@ Ahora añadimos un [formulario](./dowload/docs.zip) a la pagina web, donde los d
 
 ### PASO 8. -  Creación de formulario
 
-Para ello editaremos desde cualquier máquina conectada el Amazon EFS el index.html añadiendo en la `<body>` el siguiente código
+Para ello editaremos  el index.html desde cualquier máquina conectada el Amazon EFS, ejecutando
 
 ```bash
-cd /var/www/html/efs_mount
+cd /var/www/html/efs-mount
 sudo nano index.html
 ```
-
-Y añadimos un enlace a formulario.php, quedando el archivo de la siguiente manera
+Y añadimos un <em>enlace</em> a formulario.php, quedando el archivo de la siguiente manera
 
 ```html
 <!DOCTYPE html>
@@ -256,7 +255,7 @@ Y añadimos un enlace a formulario.php, quedando el archivo de la siguiente mane
     <title>Movie App</title>
   </head>
   <body>
-    <header><p>Andres Heras</p>
+    <header><p>Nombre del Alumno</p>
      <form action="formulario.php">
                 <input class="boton_personalizado" type="submit" value="Donativos Turquia y Siria " />
         </form>
@@ -273,7 +272,7 @@ Ahora creamos el archivo **`formulario.php`** ejecutando el siguiente comando:
 
 `sudo nano formulario.php`
 
-Escribimos el siguiente código en el archivo creado
+y escribimos el siguiente código:
 
 ```html
 <html>
@@ -308,7 +307,7 @@ Escribimos el siguiente código en el archivo creado
 </html>
 ```
 
-Como vemos en el documento html, los datos del formulario serán grabados en el archivo _grabar.php_ que crearemos ahora. Ejecutamos el siguiente comando:
+Como vemos en el documento html, los datos del formulario serán grabados en el archivo _grabar.php_ que crearemos ahora ejecutando el siguiente comando:
 
 ```bash
 sudo nano grabar.php
@@ -344,7 +343,7 @@ $sql = "INSERT INTO donativos VALUES (null,:nombre, :donativo, :tipomoneda)";
 $stmt= $conn->prepare($sql);
 $stmt->execute($data);
 echo "<div class='center'>";
-echo "<h2> Has colaborado con ". $donativo. "  " . $tipomoneda."</h2>" ;
+echo "<h2> Has colaborado con ". $donativo. "  " . $tipomoneda."</h2>";
 echo "<h2> Donacion registrada correctamente. Gracias por su colaboracion </h2>";
 echo "<h2><a href='index.html' > Volver a Inicio </a></h2>";
 echo "</div>";
@@ -362,7 +361,9 @@ echo "</div>";
 
 Finalmente creamos el arhivo conexion.php.
 
-`sudo nano conexion.php`
+```bash
+sudo nano conexion.php
+```
 
 Y copiamos el siguiente código:
 
@@ -507,4 +508,4 @@ tipomoneda CHAR(5) CHECK (tipomoneda IN ('Euro','Dolar')));
 ```
 ### PASO 13- SECURIZAR
 
-Tras comprobar que todo funcione correctamente comenzaremos a securizar el despliegue para ello eliminaremos la regla de entrada de SSH de los grupos de seguridad, quitaremos el acceso público de nuestra base de datos, cambiaremos la regla de entrada del puerto 3306 para que solo esté abierto para conexiones que lleguen desde los servidores web y por último cambiaremos el grupo de seguridad de las maquinas web para que solo el balanceador pueda acceder a ellas una vez hecho esto habremos terminado con el despliegue y con todo esto tendremos las siguientes ventajas:
+Tras comprobar que todo funcione correctamente comenzaremos a securizar el despliegue: Eliminaremos la regla de entrada de SSH de los grupos de seguridad; retiraremos el acceso público de nuestra base de datos; cambiaremos la regla de entrada del puerto 3306 para que solo esté abierto para conexiones que lleguen desde la ips privadas de nuestros servidores web; y por último, cambiaremos el grupo de seguridad de las maquinas web, para que solo el balanceador pueda acceder a ellas. 
